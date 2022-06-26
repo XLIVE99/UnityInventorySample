@@ -1,0 +1,111 @@
+{
+	"items":[
+		{
+			"itemName": "Book",
+            "itemType": 0,
+            "itemID": 0,
+            "itemGroupID": 0,
+            "itemAdds": ""
+		},
+		{
+			"itemName": "Key",
+            "itemType": 0,
+            "itemID": 1,
+            "itemGroupID": 0,
+            "itemAdds": ""
+		},
+		{
+			"itemName": "Coffee",
+            "itemType": 0,
+            "itemID": 2,
+            "itemGroupID": 0,
+            "itemAdds": ""
+		},
+		{
+			"itemName": "Magic Scroll",
+            "itemType": 0,
+            "itemID": 3,
+            "itemGroupID": 0,
+            "itemAdds": ""
+		},
+		{
+			"itemName": "One Handed Sword",
+            "itemType": 1,
+            "itemID": 4,
+            "itemGroupID": 1,
+            "itemAdds": "
+			{
+				\"rules\":
+				[
+					{
+						\"slotCoverage\": [1],
+						\"slotChecks\": [0]
+					},
+					{
+						\"slotCoverage\": [0],
+						\"slotChecks\": [1]
+					}
+				]
+			}"
+		},
+		{
+			"itemName": "Shield",
+            "itemType": 1,
+            "itemID": 5,
+            "itemGroupID": 2,
+            "itemAdds": "
+			{
+				\"rules\":
+				[
+					{
+						\"slotCoverage\": [0],
+						\"slotChecks\": [1]
+					}
+				]
+			}"
+		},
+		{
+			"itemName": "Two Handed Sword",
+            "itemType": 1,
+            "itemID": 6,
+            "itemGroupID": 0,
+            "itemAdds": "
+			{
+				\"rules\":
+				[
+					{
+						\"slotCoverage\": [1,0],
+						\"slotChecks\": []
+					}
+				]
+			}"
+		},
+		{
+			"itemName": "Orb",
+            "itemType": 1,
+            "itemID": 7,
+            "itemGroupID": 3,
+            "itemAdds": "
+			{
+				\"rules\":
+				[
+					{
+						\"slotCoverage\": [1],
+						\"slotChecks\": [0]
+					},
+					{
+						\"slotCoverage\": [0],
+						\"slotChecks\": [1]
+					}
+				]
+			}"
+		},
+		{
+			"itemName": "Lever",
+            "itemType": 0,
+            "itemID": 8,
+            "itemGroupID": 0,
+            "itemAdds": ""
+		}
+	]
+}
