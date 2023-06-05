@@ -6,7 +6,7 @@ Very basic inventory system made with Unity 2021.3.5f1
 
 # Interactions
 ![](Images/Interaction.png)<br>
-Green means both items can be equipped at the same time. Since two handed sword already occupy two slot, I colored it green.
+Green means both items can be equipped at the same time. Since two handed sword already occupy two slots, I colored it green.
 
 # Features
 - Basic, equippable and inspectable items
