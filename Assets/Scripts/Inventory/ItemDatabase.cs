@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class ItemDatabase : MonoBehaviour
 {
-    public enum ItemType { Basic, Equippable}
+    public ItemBaseScriptable[] items;
 
     [System.Serializable]
     public struct ItemInfo
     {
         public string itemName;
-        public ItemType itemType;
+        public ItemBaseScriptable.EItemType itemType;
         public int itemID;
         public int itemGroupID;
         public string itemAdds; //Additionals
@@ -21,7 +21,7 @@ public class ItemDatabase : MonoBehaviour
         public List<ItemInfo> items;
     }
 
-    public List<ItemInfo> items = new List<ItemInfo>();
+    //public List<ItemInfo> items = new List<ItemInfo>();
 
     public static ItemDatabase instance;
 
@@ -33,14 +33,6 @@ public class ItemDatabase : MonoBehaviour
             instance = this;
 
         itemPrefab = Resources.Load<GameObject>("Items/UI/Item");
-
-        string itemJson = Resources.Load<TextAsset>("Items/Items").text;
-        itemJson = Regex.Replace(itemJson, @"\s(?=(?:""[^ ""]*"" |[^ ""])*$)|\r?\n\s+", "");
-
-        //Debug.Log("json: " + itemJson);
-
-        ItemWrapper wrapper = JsonUtility.FromJson<ItemWrapper>(itemJson);
-        items.AddRange(wrapper.items);
     }
 
     public GameObject GetEmptyItem()
@@ -49,34 +41,11 @@ public class ItemDatabase : MonoBehaviour
         return createdItem;
     }
 
-    public ItemBase GetItem(int itemID)
+    public ItemBase CreateItem(ItemBaseScriptable i)
     {
-        foreach(ItemInfo item in items)
-        {
-            if(item.itemID == itemID)
-            {
-                GameObject createdItem = Instantiate(itemPrefab);
-                AddItemToGameObject(createdItem, item);
-                createdItem.GetComponent<ItemUI>().Initialize();
-                return createdItem.GetComponent<ItemBase>();
-            }
-        }
-
-        return null;
-    }
-
-    private void AddItemToGameObject(GameObject g, ItemInfo item)
-    {
-        switch (item.itemType)
-        {
-            case ItemType.Basic:
-                g.AddComponent<ItemBasic>().Initialize(item);
-                break;
-            case ItemType.Equippable:
-                g.AddComponent<ItemEquippable>().Initialize(item);
-                break;
-            default:
-                break;
-        }
+        GameObject createdItem = Instantiate(i.ItemPrefab);
+        createdItem.GetComponent<ItemUI>().Initialize(i.ItemName);
+        createdItem.GetComponent<ItemBase>().Initialize(i);
+        return createdItem.GetComponent<ItemBase>();
     }
 }

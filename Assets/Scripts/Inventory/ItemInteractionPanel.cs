@@ -11,17 +11,6 @@ public class ItemInteractionPanel : MonoBehaviour
 
     private InventoryBase currentInv;
 
-    //Maded singleton so we can access this from any item
-    #region SINGLETON
-    public static ItemInteractionPanel instance;
-
-    private void Awake()
-    {
-        if (instance == null)
-            instance = this;
-    }
-    #endregion
-
     public void FocusPanel(ItemBase item, InventoryBase curInv)
     {
         if ((currentItem != null && currentItem != item) || (currentInv != null && curInv != currentInv))
@@ -31,6 +20,9 @@ public class ItemInteractionPanel : MonoBehaviour
             ClosePanel();
             return;
         }
+
+        if (!gameObject.activeSelf)
+            gameObject.SetActive(true);
 
         currentItem = item;
         currentInv = curInv;
@@ -55,6 +47,8 @@ public class ItemInteractionPanel : MonoBehaviour
         b.onClick.AddListener(() => onClick.Invoke(currentInv));
         b.onClick.AddListener(ClosePanel);
         b.interactable = interactable;
+
+        buttonIndex++;
     }
 
     public void ClosePanel()
@@ -68,6 +62,10 @@ public class ItemInteractionPanel : MonoBehaviour
             }
         }
 
+        if (gameObject.activeSelf)
+            gameObject.SetActive(false);
+
+        buttonIndex = 0;
         currentItem = null;
     }
 }

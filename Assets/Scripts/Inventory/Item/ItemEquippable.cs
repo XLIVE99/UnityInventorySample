@@ -2,27 +2,17 @@ using UnityEngine;
 
 public class ItemEquippable : ItemBase, IEquippable, IClickableItem
 {
-    public struct RuleWrapper
-    {
-        public EquipRules[] rules;
-    }
-
-    public EquipRules[] rules;
-
-    public override void Initialize(ItemDatabase.ItemInfo info)
-    {
-        base.Initialize(info);
-
-        RuleWrapper ruleW = JsonUtility.FromJson<RuleWrapper>(info.itemAdds);
-        rules = ruleW.rules;
-    }
+    ItemEquippableScriptable EquippableInfo => itemInfo as ItemEquippableScriptable;
 
     public void OnClicked(InventoryBase currentInv)
     {
-        ItemInteractionPanel.instance.FocusPanel(this, currentInv);
-
         bool canEquip = CheckEquip(currentInv.interactingInv, out EquipRules _);
-        ItemInteractionPanel.instance.AddButton("Equip", OnEquipPressed, canEquip);
+        MainCanvas.instance.interactionPanel.AddButton("Equip", OnEquipPressed, canEquip);
+
+        if (!string.IsNullOrEmpty(EquippableInfo.InspectText))
+            MainCanvas.instance.interactionPanel.AddButton("Inspect", OnInspectPressed);
+
+        MainCanvas.instance.interactionPanel.FocusPanel(this, currentInv);
     }
 
     public bool CheckEquip(InventoryBase checkInv, out EquipRules selectedRule)
@@ -44,9 +34,10 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
             return false;
         }
 
+        ItemEquippableScriptable EInfo = EquippableInfo; //No need to cast multiple times
         SlotPlayer[] playerSlots = checkInv.GetAllSlots<SlotPlayer>();
 
-        //Sort according to enum
+        //Sort according to enum, it will be easier to place item
         for(int i = 0; i < playerSlots.Length; i++)
         {
             if(i != (int)playerSlots[i].slotType)
@@ -61,13 +52,13 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
         int availableBits = 0;
         foreach (SlotPlayer slot in playerSlots)
         {
-            if (slot.isAvailable)
+            if (!slot.hasItem)
                 availableBits |= 1 << (int)slot.slotType;
         }
 
-        foreach (EquipRules rule in rules)
+        foreach (EquipRules rule in EInfo.EquipRules)
         {
-            int itemMask = 0;
+            int itemMask = 0; //Item coverage slots, e.g. 00011 => The item requires two slots to check before equip
 
             //Check other slots
             foreach(SlotPlayer.SlotType t in rule.slotChecks)
@@ -82,12 +73,20 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
             {
                 int slotIndex = 0;
                 bool conflict = false;
-                while(itemMask != 0)
+                while(lastCheck != 0) //itemMask changed with lastCheck start
                 {
-                    if((itemMask & 1) == 1 && !playerSlots[slotIndex].isAvailable)
+                    if((lastCheck & 1) == 1 && playerSlots[slotIndex].hasItem)
                     {
-                        //Check if item on slot is allowed
-                        if (!ItemGroupManager.instance.IsItemAllowed(itemGroupID, playerSlots[slotIndex].item.itemID))
+                        //Check if the item on slot is allowed
+                        if (playerSlots[slotIndex].item.itemInfo == null)
+                        {
+#if UNITY_EDITOR
+                            Debug.LogWarning("Item is not allowed");
+#endif
+                            conflict = true;
+                            break;
+                        }
+                        else if (!playerSlots[slotIndex].item.itemInfo.AllowedGroup.HasFlag(itemInfo.ItemGroup))
                         {
 #if UNITY_EDITOR
                             Debug.LogWarning("Item is not allowed");
@@ -96,7 +95,7 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
                             break;
                         }
                     }
-                    itemMask >>= 1;
+                    lastCheck >>= 1; //itemMask change end
                     slotIndex++;
                 }
 
@@ -122,7 +121,7 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
             else
             {
 #if UNITY_EDITOR
-                Debug.LogWarning("There is not enough space for " + itemName);
+                Debug.LogWarning("There is not enough space for " + itemInfo.ItemName);
 #endif
             }
         }
@@ -146,7 +145,8 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
             }
         }
 
-        ItemBase item = ItemDatabase.instance.GetItem(itemID);
+        //Since we are cloning item to player slot, we need to clone same item
+        ItemBase item = ItemDatabase.instance.CreateItem(itemInfo);
 
         if(selectedRule.slotCoverage.Length > 1)
         {
@@ -158,9 +158,8 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
                 ItemConnection connection = connectionItem.AddComponent<ItemConnection>();
                 connection.slot = playerSlots[(int)selectedRule.slotCoverage[i]];
                 connection.slot.AddItem(connectionItem.GetComponent<ItemBase>());
-                connection.Initialize(new ItemDatabase.ItemInfo());
 
-                connectionItem.GetComponent<ItemUI>().Initialize();
+                connectionItem.GetComponent<ItemUI>().Initialize("BLOCKED");
 
                 holder.connections[i - 1] = connection;
             }
@@ -175,6 +174,11 @@ public class ItemEquippable : ItemBase, IEquippable, IClickableItem
         {
             Equip(currentInv.interactingInv, selectedR);
         }
+    }
+
+    private void OnInspectPressed(InventoryBase _)
+    {
+        MainCanvas.instance.inspectionPanel.Inspect(EquippableInfo.InspectText);
     }
     #endregion
 }

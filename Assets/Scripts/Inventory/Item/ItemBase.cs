@@ -2,15 +2,10 @@ using UnityEngine;
 
 public abstract class ItemBase : MonoBehaviour
 {
-    public string itemName { get; protected set; }
-    public int itemID { get; protected set; }
-    public int itemGroupID { get; protected set; }
+    [HideInInspector] public ItemBaseScriptable itemInfo;
 
-    public virtual void Initialize(ItemDatabase.ItemInfo info)
+    public virtual void Initialize(ItemBaseScriptable info)
     {
-        itemID = info.itemID;
-        itemGroupID = info.itemGroupID;
-
-        itemName = info.itemName;
+        itemInfo = info;
     }
 }

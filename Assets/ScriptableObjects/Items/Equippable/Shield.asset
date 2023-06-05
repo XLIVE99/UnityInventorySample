@@ -1,0 +1,23 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa49438ce082a1a41996bd64b7ac8070, type: 3}
+  m_Name: Shield
+  m_EditorClassIdentifier: 
+  itemName: Shield
+  itemGroup: 2
+  allowedGroup: 3
+  itemPrefab: {fileID: 5869852511321529012, guid: 4b0f2d0a61463314ba3385ec34899b39, type: 3}
+  equipRules:
+  - slotCoverage: 00000000
+    slotChecks: 01000000
+  inspectText: It looks like a door halved.
+  additionals: 

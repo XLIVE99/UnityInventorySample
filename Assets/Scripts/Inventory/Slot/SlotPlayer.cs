@@ -7,7 +7,7 @@ public class SlotPlayer : SlotBase
 
     public override void OnPointerClick(PointerEventData eventData)
     {
-        ItemInteractionPanel.instance.ClosePanel();
+        MainCanvas.instance.interactionPanel.ClosePanel();
 
         RemoveItem();
     }

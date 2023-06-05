@@ -5,7 +5,7 @@ public class SlotBase : MonoBehaviour, IPointerClickHandler
 {
     public ItemBase item;
 
-    public bool isAvailable => item == null;
+    public bool hasItem => item != null;
 
     public virtual void OnPointerClick(PointerEventData eventData)
     {
@@ -34,7 +34,7 @@ public class SlotBase : MonoBehaviour, IPointerClickHandler
     {
         if(item != null)
         {
-            if (item.itemID < 0 && !force)
+            if (item.TryGetComponent(out ItemConnection _) && !force)
                 return;
 
             if (item.TryGetComponent(out ItemConnectionHolder holder))
